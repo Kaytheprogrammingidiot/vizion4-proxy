@@ -1,6 +1,6 @@
 class GitHubZipProxy {
   constructor() {
-    this.proxyBase = 'https://v4proxy.vercel.app/proxy.mjs';
+    this.proxyBase = 'https://v4proxy-ruby.vercel.app/proxy.mjs';
   }
 
   getInfo() {
