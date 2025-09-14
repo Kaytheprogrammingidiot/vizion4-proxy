@@ -1,28 +1,46 @@
-class GitHubZipProxy {
+class GitHubZipReporter {
   constructor() {
-    this.proxyBase = 'https://v4proxy-ruby.vercel.app/proxy.mjs';
+    this.proxyBase = 'https://v4proxy.vercel.app/proxy.mjs';
   }
 
   getInfo() {
     return {
-      id: 'githubZipProxy',
-      name: 'GitHub ZIP Proxy',
+      id: 'githubZipReporter',
+      name: 'GitHub ZIP Reporter',
       blocks: [
-        {
-          opcode: 'fetchRepoZip',
-          blockType: 'command',
-          text: 'fetch repo [OWNER]/[REPO] as zip',
-          arguments: {
-            OWNER: { type: 'string', defaultValue: 'octocat' },
-            REPO: { type: 'string', defaultValue: 'Hello-World' }
-          }
-        },
         {
           opcode: 'setProxy',
           blockType: 'command',
           text: 'set proxy to [URL]',
           arguments: {
             URL: { type: 'string', defaultValue: 'https://your-proxy.example.com' }
+          }
+        },
+        {
+          opcode: 'getZipArrayBuffer',
+          blockType: 'reporter',
+          text: 'get array buffer for [OWNER]/[REPO]',
+          arguments: {
+            OWNER: { type: 'string', defaultValue: 'octocat' },
+            REPO: { type: 'string', defaultValue: 'Hello-World' }
+          }
+        },
+        {
+          opcode: 'getZipBase64',
+          blockType: 'reporter',
+          text: 'get base64 for [OWNER]/[REPO]',
+          arguments: {
+            OWNER: { type: 'string', defaultValue: 'octocat' },
+            REPO: { type: 'string', defaultValue: 'Hello-World' }
+          }
+        },
+        {
+          opcode: 'getZipDataURL',
+          blockType: 'reporter',
+          text: 'get data URL for [OWNER]/[REPO]',
+          arguments: {
+            OWNER: { type: 'string', defaultValue: 'octocat' },
+            REPO: { type: 'string', defaultValue: 'Hello-World' }
           }
         }
       ]
@@ -33,20 +51,32 @@ class GitHubZipProxy {
     this.proxyBase = args.URL;
   }
 
-  async fetchRepoZip(args) {
-    const { OWNER, REPO } = args;
-    const targetUrl = `https://github.com/${OWNER}/${REPO}/archive/refs/heads/main.zip`;
-    const proxiedUrl = `${this.proxyBase}?url=${encodeURIComponent(targetUrl)}`;
-    const response = await fetch(proxiedUrl);
-    if (!response.ok) throw new Error(`Proxy fetch failed: ${response.status}`);
-    const blob = await response.blob();
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `${REPO}.zip`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  async fetchZipBuffer(owner, repo) {
+    const target = `https://github.com/${owner}/${repo}/archive/refs/heads/main.zip`;
+    const proxied = `${this.proxyBase}?url=${encodeURIComponent(target)}`;
+    const res = await fetch(proxied);
+    if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+    return await res.arrayBuffer();
+  }
+
+  async getZipArrayBuffer(args) {
+    const buffer = await this.fetchZipBuffer(args.OWNER, args.REPO);
+    return buffer;
+  }
+
+  async getZipBase64(args) {
+    const buffer = await this.fetchZipBuffer(args.OWNER, args.REPO);
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+    return btoa(binary);
+  }
+
+  async getZipDataURL(args) {
+    const buffer = await this.fetchZipBuffer(args.OWNER, args.REPO);
+    const base64 = await this.getZipBase64(args);
+    return `data:application/zip;base64,${base64}`;
   }
 }
 
-Scratch.extensions.register(new GitHubZipProxy());
+Scratch.extensions.register(new GitHubZipReporter());
