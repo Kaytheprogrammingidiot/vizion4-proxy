@@ -9,9 +9,7 @@ export default async function handler(req) {
       status: 400,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET',
-        'Access-Control-Allow-Headers': 'Content-Type'
+        'Access-Control-Allow-Origin': '*'
       }
     });
   }
@@ -24,9 +22,7 @@ export default async function handler(req) {
         status: response.status,
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET',
-          'Access-Control-Allow-Headers': 'Content-Type'
+          'Access-Control-Allow-Origin': '*'
         }
       });
     }
@@ -38,9 +34,7 @@ export default async function handler(req) {
       headers: {
         'Content-Type': 'application/zip',
         'Content-Disposition': 'attachment; filename=repo.zip',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET',
-        'Access-Control-Allow-Headers': 'Content-Type'
+        'Access-Control-Allow-Origin': '*'
       }
     });
   } catch (err) {
@@ -48,9 +42,7 @@ export default async function handler(req) {
       status: 500,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET',
-        'Access-Control-Allow-Headers': 'Content-Type'
+        'Access-Control-Allow-Origin': '*'
       }
     });
   }
