@@ -1,6 +1,6 @@
 class GitHubZipReporter {
   constructor() {
-    this.proxyBase = 'https://v4proxy.vercel.app/api/proxy.mjs';
+    this.proxyBase = 'https://v4proxy.vercel.app/api/proxy';
   }
 
   getInfo() {
